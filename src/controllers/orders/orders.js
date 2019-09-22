@@ -7,3 +7,11 @@ module.exports.addOrder = (req, res) => {
 		.status(STATUSES.STATUS_SUCCESS)
 		.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "" });
 };
+
+module.exports.updateOrder = (req, res) => {
+	console.log("test updateOrder");
+
+	return res
+		.status(STATUSES.STATUS_SUCCESS)
+		.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "" });
+};
