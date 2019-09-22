@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 require("./model.js");
 
-const CredentialsModel = mongoose.model("Users");
+const CredentialsModel = mongoose.model("Credentials");
 
 // get
 module.exports.getUserCredsFromDbByUserName = username =>
@@ -14,8 +14,8 @@ module.exports.addUserCredsInDb = userData => {
 };
 
 // update
-module.exports.updateUserCredsFromDb = ({ username, userData }) =>
-	CredentialsModel.findOneAndUpdate({ username }, userData, {
+module.exports.updateUserCredsFromDb = ({ username, newUserCreds }) =>
+	CredentialsModel.findOneAndUpdate({ username }, newUserCreds, {
 		overwrite: true,
 	});
 

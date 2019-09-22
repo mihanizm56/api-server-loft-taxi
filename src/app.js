@@ -16,6 +16,7 @@ const http_server = require("http");
 const rateLimit = require("express-rate-limit");
 const router = require("./routes/root");
 const { port, dbURL } = require("./utils/variables/index.js");
+const fetchPublicTokenMiddleware = require("./middlewares/get-public-token/get-public-token");
 
 /// prepare config for server
 dotenv.config();
@@ -35,6 +36,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(process.cwd(), "public")));
+app.use(fetchPublicTokenMiddleware);
 
 // routes
 app.use("/api", router);

@@ -1,11 +1,12 @@
 const express = require("express");
 const credentialsCtrl = require("../controllers/credentials/credentials");
+const tokenVefirifyMiddleware = require("../middlewares/auth-tokens/auth-tokens");
 
 const router = express.Router();
 
 // credentials router
-router.post("/", credentialsCtrl.getCreds);
-router.patch("/", credentialsCtrl.updCreds);
-router.put("/", credentialsCtrl.addCreds);
+router.post("/", tokenVefirifyMiddleware, credentialsCtrl.getCreds);
+router.patch("/", tokenVefirifyMiddleware, credentialsCtrl.updCreds);
+router.put("/", tokenVefirifyMiddleware, credentialsCtrl.addCreds);
 
 module.exports = router;

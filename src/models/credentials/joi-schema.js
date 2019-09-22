@@ -1,16 +1,17 @@
-import Joi from "@hapi/joi";
+const Joi = require("@hapi/joi");
 
-const credentialsSchema = Joi.object().keys({
+module.exports = Joi.object().keys({
 	username: Joi.string()
 		.min(1)
 		.max(40)
 		.required(),
 	credentials: {
-		card_user: Joi.string().required(),
+		card_user: Joi.string()
+			.min(1)
+			.max(40)
+			.required(),
 		exp_date: Joi.string().required(),
 		card_number: Joi.number().required(),
-		cvv: Joi.string().required(),
+		cvv: Joi.number().required(),
 	},
 });
-
-export default credentialsSchema;
