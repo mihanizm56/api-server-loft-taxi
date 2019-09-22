@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const userCredentialsSchema = new mongoose.Schema({
+const ordersSchema = new mongoose.Schema({
 	username: {
 		type: String,
 		required: true,
-		unique: true,
+		unique: false,
 	},
 	timestamp: {
 		type: Date,
@@ -12,12 +12,12 @@ const userCredentialsSchema = new mongoose.Schema({
 		unique: false,
 	},
 	from: {
-		type: Number,
+		type: String,
 		required: true,
 		unique: false,
 	},
 	to: {
-		type: Number,
+		type: String,
 		required: true,
 		unique: false,
 	},
@@ -28,4 +28,4 @@ const userCredentialsSchema = new mongoose.Schema({
 	},
 });
 
-mongoose.model("Credentials", userCredentialsSchema, "Credentials");
+mongoose.model("Orders", ordersSchema, "Orders");

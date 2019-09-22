@@ -16,9 +16,16 @@ module.exports = async (req, res, next) => {
 	} catch (error) {
 		console.log("error in verifying access token", error);
 
-		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
+		if (Boolean(error.expired)) {
+			return res.status(STATUSES.STATUS_UNAUTHORIZED).json({
+				message: MESSAGES.MESSAGE_ERROR,
+				error: ERROR_MESSAGES.EXPIRED,
+			});
+		}
+
+		return res.status(STATUSES.STATUS_UNAUTHORIZED).json({
 			message: MESSAGES.MESSAGE_ERROR,
-			error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+			error: ERROR_MESSAGES.UNAUTHORIZED,
 		});
 	}
 };

@@ -1,17 +1,14 @@
-import Joi from "@hapi/joi";
+const Joi = require("@hapi/joi");
 
-const orderSchema = Joi.object().keys({
+module.exports = Joi.object().keys({
 	username: Joi.string()
 		.min(1)
 		.max(40)
 		.required(),
 	timestamp: Joi.date()
-		.format("YYYY-MM-DD")
-		.utc()
+		.iso()
 		.required(),
-	from: Joi.number().required(),
-	to: Joi.number().required(),
+	from: Joi.string().required(),
+	to: Joi.string().required(),
 	isDone: Joi.boolean().required(),
 });
-
-export default orderSchema;
