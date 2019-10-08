@@ -37,6 +37,58 @@ module.exports.getCreds = async (req, res) => {
 		});
 	}
 };
+
+module.exports.addCreds = async (req, res) => {
+	try {
+		const body = req.body;
+		const username = sanitize(res.locals.username);
+
+		const card_user = sanitize(body.card_user);
+		const exp_date = sanitize(body.exp_date);
+		const card_number = sanitize(body.card_number);
+		const cvv = sanitize(body.cvv);
+		const userCreds = {
+			username,
+			credentials: { card_user, exp_date, card_number, cvv },
+		};
+
+		try {
+			await credentialsSchema.validateAsync(userCreds);
+		} catch (error) {
+			console.log("error in validating user creds", error);
+
+			return res.status(STATUSES.STATUS_NOT_CORRECT_DATA).json({
+				message: MESSAGES.MESSAGE_ERROR,
+				error: ERROR_MESSAGES.NOT_CORRECT_DATA,
+			});
+		}
+		try {
+			await addUserCredsInDb(userCreds).save();
+
+			console.log("test addCreds user", res.locals.username);
+			console.log("creds body req", body);
+
+			return res
+				.status(STATUSES.STATUS_SUCCESS)
+				.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "" });
+		} catch (error) {
+			console.log("error in adding user in db", error);
+
+			return res.status(STATUSES.STATUS_NOT_CORRECT_DATA).json({
+				message: MESSAGES.MESSAGE_ERROR,
+				error: ERROR_MESSAGES.NOT_CORRECT_DATA,
+			});
+		}
+	} catch (error) {
+		console.log(error);
+
+		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
+			message: MESSAGES.MESSAGE_ERROR,
+			error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+		});
+	}
+};
+
 module.exports.updCreds = async (req, res) => {
 	try {
 		const body = req.body;
@@ -83,56 +135,6 @@ module.exports.updCreds = async (req, res) => {
 		return res
 			.status(STATUSES.STATUS_SUCCESS)
 			.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "" });
-	} catch (error) {
-		console.log(error);
-
-		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
-			message: MESSAGES.MESSAGE_ERROR,
-			error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
-		});
-	}
-};
-module.exports.addCreds = async (req, res) => {
-	try {
-		const body = req.body;
-		const username = sanitize(res.locals.username);
-
-		const card_user = sanitize(body.card_user);
-		const exp_date = sanitize(body.exp_date);
-		const card_number = sanitize(body.card_number);
-		const cvv = sanitize(body.cvv);
-		const userCreds = {
-			username,
-			credentials: { card_user, exp_date, card_number, cvv },
-		};
-
-		try {
-			await credentialsSchema.validateAsync(userCreds);
-		} catch (error) {
-			console.log("error in validating user creds", error);
-
-			return res.status(STATUSES.STATUS_NOT_CORRECT_DATA).json({
-				message: MESSAGES.MESSAGE_ERROR,
-				error: ERROR_MESSAGES.NOT_CORRECT_DATA,
-			});
-		}
-		try {
-			await addUserCredsInDb(userCreds).save();
-
-			console.log("test addCreds user", res.locals.username);
-			console.log("creds body req", body);
-
-			return res
-				.status(STATUSES.STATUS_SUCCESS)
-				.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "" });
-		} catch (error) {
-			console.log("error in adding user in db", error);
-
-			return res.status(STATUSES.STATUS_NOT_CORRECT_DATA).json({
-				message: MESSAGES.MESSAGE_ERROR,
-				error: ERROR_MESSAGES.NOT_CORRECT_DATA,
-			});
-		}
 	} catch (error) {
 		console.log(error);
 
