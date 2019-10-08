@@ -16,18 +16,20 @@ module.exports.getCreds = async (req, res) => {
 		const usernameFromToken = sanitize(res.locals.username);
 		console.log("test getCreds", usernameFromToken);
 		const {
-			credentials: { card_user, exp_date, card_number },
+			credentials: { card_user, exp_date, card_number, cvv },
 		} = await getUserCredsFromDbByUserName(usernameFromToken);
 
-		return res.status(STATUSES.STATUS_SUCCESS).json({
-			message: MESSAGES.MESSAGE_SUCCESS,
-			error: "",
-			data: {
-				card_user,
-				exp_date,
-				card_number,
-			},
-		});
+		if (card_user && exp_date && card_number && cvv) {
+			return res.status(STATUSES.STATUS_SUCCESS).json({
+				message: MESSAGES.MESSAGE_SUCCESS,
+				error: "",
+			});
+		} else {
+			return res.status(STATUSES.STATUS_SUCCESS).json({
+				message: MESSAGES.MESSAGE_SUCCESS,
+				error: "not full data",
+			});
+		}
 	} catch (error) {
 		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
 			message: MESSAGES.MESSAGE_ERROR,
