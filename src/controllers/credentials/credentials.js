@@ -11,29 +11,44 @@ const {
 } = require("../../models/credentials/methods");
 const credentialsSchema = require("../../models/credentials/joi-schema");
 
-module.exports.getCreds = async (req, res) => {
-	try {
-		const usernameFromToken = sanitize(res.locals.username);
-		console.log("test getCreds", usernameFromToken);
-		const {
-			credentials: { card_user, exp_date, card_number, cvv },
-		} = await getUserCredsFromDbByUserName(usernameFromToken);
+module.exports.getStatusOfCreds = async (req, res) => {
+	const username = sanitize(req.query.username);
 
-		if (card_user && exp_date && card_number && cvv) {
-			return res.status(STATUSES.STATUS_SUCCESS).json({
-				message: MESSAGES.MESSAGE_SUCCESS,
-				error: "",
-			});
-		} else {
-			return res.status(STATUSES.STATUS_SUCCESS).json({
-				message: MESSAGES.MESSAGE_SUCCESS,
-				error: "not full data",
+	if (Boolean(username)) {
+		try {
+			console.log("test getStatusOfCreds", username);
+			const userData = await getUserCredsFromDbByUserName(username);
+			console.log("test userData", userData);
+
+			if (
+				Boolean(userData) &&
+				userData.credentials.card_user &&
+				userData.credentials.exp_date &&
+				userData.credentials.card_number &&
+				userData.credentials.cvv
+			) {
+				return res.status(STATUSES.STATUS_SUCCESS).json({
+					message: MESSAGES.MESSAGE_SUCCESS,
+					error: "",
+				});
+			} else {
+				return res.status(STATUSES.STATUS_SUCCESS).json({
+					message: MESSAGES.MESSAGE_ERROR,
+					error: ERROR_MESSAGES.NOT_CORRECT_DATA,
+				});
+			}
+		} catch (error) {
+			console.log("error", error);
+
+			return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
+				message: MESSAGES.MESSAGE_ERROR,
+				error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
 			});
 		}
-	} catch (error) {
-		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
+	} else {
+		return res.status(STATUSES.STATUS_SUCCESS).json({
 			message: MESSAGES.MESSAGE_ERROR,
-			error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+			error: ERROR_MESSAGES.NOT_CORRECT_DATA,
 		});
 	}
 };

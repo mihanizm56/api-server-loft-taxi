@@ -6,6 +6,7 @@ const router = express.Router();
 
 // credentials router
 router.post("/", tokenVefirifyMiddleware, credentialsCtrl.updCreds);
+router.get("/", credentialsCtrl.getStatusOfCreds);
 // router.patch("/", tokenVefirifyMiddleware, credentialsCtrl.updCreds);
 // router.put("/", tokenVefirifyMiddleware, credentialsCtrl.addCreds);
 
