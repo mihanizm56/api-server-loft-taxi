@@ -1,4 +1,7 @@
-const { verifyAccessToken } = require("../../utils/tokens/tokens");
+const {
+	verifyAccessToken,
+	getTokenFromHeaders,
+} = require("../../utils/tokens/tokens");
 const {
 	ERROR_MESSAGES,
 	STATUSES,
@@ -7,8 +10,8 @@ const {
 
 module.exports = async (req, res, next) => {
 	try {
-		const token = req.body.token;
-		console.log("get token");
+		const token = getTokenFromHeaders(req.headers.authorization);
+		console.log("get token from headers", token);
 		const userNameFromToken = await verifyAccessToken(token);
 		console.log("userNameFromToken", userNameFromToken);
 		res.locals.username = userNameFromToken;

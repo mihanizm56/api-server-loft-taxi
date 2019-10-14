@@ -21,8 +21,21 @@ const ordersSchema = new mongoose.Schema({
 		required: true,
 		unique: false,
 	},
+	orderCoordsFrom: {
+		Latitude: { type: Number, required: true, unique: false },
+		Longitude: { type: Number, required: true, unique: false },
+	},
+	orderCoordsTo: {
+		Latitude: { type: Number, required: true, unique: false },
+		Longitude: { type: Number, required: true, unique: false },
+	},
 	isDone: {
 		type: Boolean,
+		required: true,
+		unique: false,
+	},
+	expiredAt: {
+		type: Date,
 		required: true,
 		unique: false,
 	},

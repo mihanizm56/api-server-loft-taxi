@@ -4,10 +4,13 @@ const {
 	MESSAGES,
 	ERROR_MESSAGES,
 } = require("../../constants/constants");
+const getDeltaTime = require("../../utils/date/delta");
+const getTimeCount = require("../../utils/date/counter");
 const geoSearch = require("../../services/geo/geo");
 const {
 	addOrderInDb,
 	updateOrderFromDb,
+	getLastOrderFromDB,
 } = require("../../models/orders/methods");
 const ordersSchema = require("../../models/orders/joi-schema");
 
@@ -17,14 +20,26 @@ module.exports.addOrder = async (req, res) => {
 	const username = sanitize(res.locals.username);
 	const from = sanitize(req.body.from);
 	const to = sanitize(req.body.to);
-	const timestamp = new Date();
+	const timestamp = sanitize(req.body.timestamp);
+	const expiredAt = getDeltaTime(timestamp);
 	const isDone = false;
-	const orderData = { username, from, to, timestamp, isDone };
-	console.log("initial order data", orderData);
 
 	try {
 		const orderCoordsFrom = await geoSearch(from);
 		const orderCoordsTo = await geoSearch(to);
+		const timeCounter = getTimeCount({ timestamp, expiredAt });
+
+		const orderData = {
+			username,
+			from,
+			to,
+			timestamp,
+			isDone,
+			expiredAt,
+			orderCoordsFrom,
+			orderCoordsTo,
+		};
+		console.log("orderData", orderData);
 		console.log("orderCoordsFrom", orderCoordsFrom);
 		console.log("orderCoordsTo", orderCoordsTo);
 
@@ -47,6 +62,7 @@ module.exports.addOrder = async (req, res) => {
 				error: "",
 				coords: [orderCoordsFrom, orderCoordsTo],
 				exp_time: TIMER_FOR_NEXT_ORDER,
+				time_counter: timeCounter,
 				order_id,
 			});
 		} catch (error) {
@@ -85,4 +101,36 @@ module.exports.updateOrder = async (req, res) => {
 	return res
 		.status(STATUSES.STATUS_SUCCESS)
 		.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "" });
+};
+
+module.exports.getLastOrder = async (req, res) => {
+	try {
+		const lastOrder = await getLastOrderFromDB();
+		if (lastOrder) {
+			console.log("lastOrder", lastOrder);
+			const orderData = {
+				id: lastOrder["_id"],
+				is_done: lastOrder["isDone"],
+				from_coords: lastOrder["orderCoordsFrom"],
+				to_coords: lastOrder["orderCoordsTo"],
+			};
+
+			return res.status(STATUSES.STATUS_SUCCESS).json({
+				message: MESSAGES.MESSAGE_SUCCESS,
+				error: "",
+				order: orderData,
+			});
+		}
+
+		return res
+			.status(STATUSES.STATUS_SUCCESS)
+			.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "", order: null });
+	} catch (error) {
+		console.log("error when get the last order data", error);
+
+		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
+			message: MESSAGES.MESSAGE_ERROR,
+			error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+		});
+	}
 };

@@ -3,8 +3,11 @@ require("./model.js");
 
 const OrdersModel = mongoose.model("Orders");
 
-// get
-module.exports.getOrders = () => OrdersModel.find({});
+// get last order
+module.exports.getLastOrderFromDB = () =>
+	OrdersModel.findOne()
+		.sort({ date: -1 })
+		.limit(1);
 
 // add
 module.exports.addOrderInDb = orderData => {
