@@ -53,14 +53,23 @@ module.exports.addOrder = async (req, res) => {
 		}
 
 		try {
-			const { _id: order_id } = await addOrderInDb(orderData).save();
+			const {
+				_id: order_id,
+				isDone,
+				orderCoordsTo,
+				orderCoordsFrom,
+			} = await addOrderInDb(orderData).save();
 
 			return res.status(STATUSES.STATUS_SUCCESS).json({
 				message: MESSAGES.MESSAGE_SUCCESS,
 				error: "",
-				coords: [orderCoordsFrom, orderCoordsTo],
-				exp_time: timeCounter,
-				order_id,
+				order: {
+					order_id,
+					is_done: isDone,
+					from_coords: orderCoordsFrom,
+					to_coords: orderCoordsTo,
+					exp_time: timeCounter,
+				},
 			});
 		} catch (error) {
 			console.log(error);
