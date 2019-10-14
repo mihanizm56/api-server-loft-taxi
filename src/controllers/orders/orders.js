@@ -105,11 +105,17 @@ module.exports.getLastOrder = async (req, res) => {
 		const lastOrder = await getLastOrderFromDB();
 		if (lastOrder) {
 			console.log("lastOrder", lastOrder);
+			const timeCounter = getTimeCount({
+				timestamp: lastOrder["timestamp"],
+				expiredAt: lastOrder["expiredAt"],
+			});
+
 			const orderData = {
 				id: lastOrder["_id"],
 				is_done: lastOrder["isDone"],
 				from_coords: lastOrder["orderCoordsFrom"],
 				to_coords: lastOrder["orderCoordsTo"],
+				exp_time: timeCounter,
 			};
 
 			return res.status(STATUSES.STATUS_SUCCESS).json({

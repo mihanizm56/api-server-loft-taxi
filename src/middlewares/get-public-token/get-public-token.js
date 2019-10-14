@@ -8,12 +8,15 @@ const { publicTokenUrl } = require("../../utils/variables");
 
 module.exports = async (req, res, next) => {
 	try {
-		const publicKey = await fetch(publicTokenUrl)
-			.then(data => data.json())
-			.then(data => data.PUBLIC_KEY_ACCESS);
-		console.log("get public token from auth server");
+		if (!global.JWT_PUBLIC_ACCESS) {
+			const publicKey = await fetch(publicTokenUrl)
+				.then(data => data.json())
+				.then(data => data.PUBLIC_KEY_ACCESS);
+			console.log("get public token from auth server");
 
-		global.JWT_PUBLIC_ACCESS = publicKey;
+			global.JWT_PUBLIC_ACCESS = publicKey;
+		}
+
 		next();
 	} catch (error) {
 		console.log("error in getter public token middleware", error);
