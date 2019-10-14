@@ -14,8 +14,6 @@ const {
 } = require("../../models/orders/methods");
 const ordersSchema = require("../../models/orders/joi-schema");
 
-const TIMER_FOR_NEXT_ORDER = process.env.TIMER_FOR_NEXT_ORDER;
-
 module.exports.addOrder = async (req, res) => {
 	const username = sanitize(res.locals.username);
 	const from = sanitize(req.body.from);
@@ -61,8 +59,7 @@ module.exports.addOrder = async (req, res) => {
 				message: MESSAGES.MESSAGE_SUCCESS,
 				error: "",
 				coords: [orderCoordsFrom, orderCoordsTo],
-				exp_time: TIMER_FOR_NEXT_ORDER,
-				time_counter: timeCounter,
+				exp_time: timeCounter,
 				order_id,
 			});
 		} catch (error) {
