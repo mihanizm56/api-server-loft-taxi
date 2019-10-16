@@ -11,6 +11,16 @@ const ordersSchema = new mongoose.Schema({
 		required: true,
 		unique: false,
 	},
+	fromText: {
+		type: String,
+		required: true,
+		unique: false,
+	},
+	toText: {
+		type: String,
+		required: true,
+		unique: false,
+	},
 	from: {
 		type: String,
 		required: true,

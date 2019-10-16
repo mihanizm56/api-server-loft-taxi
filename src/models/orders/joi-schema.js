@@ -11,8 +11,8 @@ module.exports = Joi.object().keys({
 	expiredAt: Joi.date()
 		.iso()
 		.required(),
-	from: Joi.string().required(),
-	to: Joi.string().required(),
+	fromText: Joi.string().required(),
+	toText: Joi.string().required(),
 	isDone: Joi.boolean().required(),
 	orderCoordsFrom: {
 		Latitude: Joi.number().required(),

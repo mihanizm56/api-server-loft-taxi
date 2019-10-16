@@ -16,7 +16,7 @@ module.exports.addOrderInDb = orderData => {
 };
 
 // update
-module.exports.updateOrderFromDb = ({ id, orderData }) =>
+module.exports.doneOrderFromDb = ({ id, orderData }) =>
 	OrdersModel.findByIdAndUpdate(id, orderData, {
 		overwrite: false,
 	});

@@ -9,28 +9,28 @@ const getTimeCount = require("../../utils/date/counter");
 const geoSearch = require("../../services/geo/geo");
 const {
 	addOrderInDb,
-	updateOrderFromDb,
+	doneOrderFromDb,
 	getLastOrderFromDB,
 } = require("../../models/orders/methods");
 const ordersSchema = require("../../models/orders/joi-schema");
 
 module.exports.addOrder = async (req, res) => {
 	const username = sanitize(res.locals.username);
-	const from = sanitize(req.body.from);
-	const to = sanitize(req.body.to);
+	const fromText = sanitize(req.body.from);
+	const toText = sanitize(req.body.to);
 	const timestamp = sanitize(req.body.timestamp);
 	const expiredAt = getDeltaTime(timestamp);
 	const isDone = false;
 
 	try {
-		const orderCoordsFrom = await geoSearch(from);
-		const orderCoordsTo = await geoSearch(to);
+		const orderCoordsFrom = await geoSearch(fromText);
+		const orderCoordsTo = await geoSearch(toText);
 		const timeCounter = getTimeCount({ timestamp, expiredAt });
 
 		const orderData = {
 			username,
-			from,
-			to,
+			fromText,
+			toText,
 			timestamp,
 			isDone,
 			expiredAt,
@@ -40,6 +40,8 @@ module.exports.addOrder = async (req, res) => {
 		console.log("orderData", orderData);
 		console.log("orderCoordsFrom", orderCoordsFrom);
 		console.log("orderCoordsTo", orderCoordsTo);
+		console.log("fromText", fromText);
+		console.log("toText", toText);
 
 		try {
 			await ordersSchema.validateAsync(orderData);
@@ -62,15 +64,15 @@ module.exports.addOrder = async (req, res) => {
 			return res.status(STATUSES.STATUS_SUCCESS).json({
 				message: MESSAGES.MESSAGE_SUCCESS,
 				error: "",
-				order:{
+				order: {
 					order_id,
 					is_done: false,
-					from_coords:orderCoordsFrom,
-					to_coords:orderCoordsTo	,
-					from_text:from,
-					to_text:to,
+					from_coords: orderCoordsFrom,
+					to_coords: orderCoordsTo,
+					from_text: fromText,
+					to_text: toText,
 					exp_time: timeCounter,
-				}
+				},
 			});
 		} catch (error) {
 			console.log(error);
@@ -90,12 +92,12 @@ module.exports.addOrder = async (req, res) => {
 	}
 };
 
-module.exports.updateOrder = async (req, res) => {
+module.exports.doneOrder = async (req, res) => {
 	const orderId = sanitize(req.body.orderId);
 	const isDone = true;
 
 	try {
-		await updateOrderFromDb({ id: orderId, orderData: { isDone } });
+		await doneOrderFromDb({ id: orderId, orderData: { isDone } });
 	} catch (error) {
 		console.log("error when upd order data", error);
 
@@ -114,17 +116,27 @@ module.exports.getLastOrder = async (req, res) => {
 	try {
 		const lastOrder = await getLastOrderFromDB();
 		if (lastOrder) {
+			const {
+				_id: order_id,
+				isDone: is_done,
+				orderCoordsFrom: from_coords,
+				orderCoordsTo: to_coords,
+				fromText: from_text,
+				toText: to_text,
+			} = lastOrder;
 			console.log("lastOrder", lastOrder);
 			const timeCounter = getTimeCount({
-				timestamp: lastOrder["timestamp"],
-				expiredAt: lastOrder["expiredAt"],
+				timestamp: lastOrder.timestamp,
+				expiredAt: lastOrder.expiredAt,
 			});
 
 			const orderData = {
-				id: lastOrder["_id"],
-				is_done: lastOrder["isDone"],
-				from_coords: lastOrder["orderCoordsFrom"],
-				to_coords: lastOrder["orderCoordsTo"],
+				order_id,
+				is_done,
+				from_coords,
+				to_coords,
+				from_text,
+				to_text,
 				exp_time: timeCounter,
 			};
 
