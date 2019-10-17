@@ -42,6 +42,7 @@ module.exports.addOrder = async (req, res) => {
 		console.log("orderCoordsTo", orderCoordsTo);
 		console.log("fromText", fromText);
 		console.log("toText", toText);
+		console.log("timestamp", timestamp);
 
 		try {
 			await ordersSchema.validateAsync(orderData);
@@ -113,9 +114,13 @@ module.exports.doneOrder = async (req, res) => {
 };
 
 module.exports.getLastOrder = async (req, res) => {
+	console.log("check request in getLastOrder");
+
 	try {
 		const lastOrder = await getLastOrderFromDB();
-		if (lastOrder) {
+		console.log("lastOrder exists", Boolean(lastOrder));
+
+		if (Boolean(lastOrder)) {
 			const {
 				_id: order_id,
 				isDone: is_done,
@@ -140,16 +145,18 @@ module.exports.getLastOrder = async (req, res) => {
 				exp_time: timeCounter,
 			};
 
+			console.log("orderData", orderData);
+
 			return res.status(STATUSES.STATUS_SUCCESS).json({
 				message: MESSAGES.MESSAGE_SUCCESS,
 				error: "",
 				order: orderData,
 			});
+		} else {
+			return res
+				.status(STATUSES.STATUS_SUCCESS)
+				.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "", order: null });
 		}
-
-		return res
-			.status(STATUSES.STATUS_SUCCESS)
-			.json({ message: MESSAGES.MESSAGE_SUCCESS, error: "", order: null });
 	} catch (error) {
 		console.log("error when get the last order data", error);
 

@@ -21,16 +21,6 @@ const ordersSchema = new mongoose.Schema({
 		required: true,
 		unique: false,
 	},
-	from: {
-		type: String,
-		required: true,
-		unique: false,
-	},
-	to: {
-		type: String,
-		required: true,
-		unique: false,
-	},
 	orderCoordsFrom: {
 		Latitude: { type: Number, required: true, unique: false },
 		Longitude: { type: Number, required: true, unique: false },

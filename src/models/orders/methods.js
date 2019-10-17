@@ -6,7 +6,7 @@ const OrdersModel = mongoose.model("Orders");
 // get last order
 module.exports.getLastOrderFromDB = () =>
 	OrdersModel.findOne()
-		.sort({ date: -1 })
+		.sort({ timestamp: -1 })
 		.limit(1);
 
 // add

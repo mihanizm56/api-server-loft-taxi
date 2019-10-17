@@ -5,8 +5,8 @@ const tokenVefirifyMiddleware = require("../middlewares/auth-tokens/auth-tokens"
 const router = express.Router();
 
 // credentials router
-router.post("/", tokenVefirifyMiddleware, credentialsCtrl.updCreds);
-router.get("/", credentialsCtrl.getStatusOfCreds);
+router.patch("/", tokenVefirifyMiddleware, credentialsCtrl.updCreds);
+router.post("/", tokenVefirifyMiddleware, credentialsCtrl.getStatusOfCreds);
 // router.patch("/", tokenVefirifyMiddleware, credentialsCtrl.updCreds);
 // router.put("/", tokenVefirifyMiddleware, credentialsCtrl.addCreds);
 
