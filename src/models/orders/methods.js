@@ -4,10 +4,8 @@ require("./model.js");
 const OrdersModel = mongoose.model("Orders");
 
 // get last order
-module.exports.getLastOrderFromDB = () =>
-	OrdersModel.findOne()
-		.sort({ timestamp: -1 })
-		.limit(1);
+module.exports.getLastOrderFromDB = username =>
+	OrdersModel.findOne({ username }).sort({ timestamp: -1 });
 
 // add
 module.exports.addOrderInDb = orderData => {

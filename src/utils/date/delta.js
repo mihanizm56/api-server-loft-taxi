@@ -1,4 +1,4 @@
-// DELTA_TIME_IN_MS - время сдвига от начала заказа
+// DELTA_TIME_IN_S - время сдвига от начала заказа
 const dotenv = require("dotenv");
 dotenv.config();
 

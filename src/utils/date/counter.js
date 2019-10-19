@@ -1,2 +1,5 @@
 module.exports = ({ timestamp, expiredAt }) =>
-	parseInt(new Date(expiredAt).getTime() - new Date(timestamp).getTime());
+	Math.round(
+		parseInt(new Date(expiredAt).getTime() - new Date(timestamp).getTime()) /
+			1000
+	);

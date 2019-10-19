@@ -114,10 +114,11 @@ module.exports.doneOrder = async (req, res) => {
 };
 
 module.exports.getLastOrder = async (req, res) => {
-	console.log("check request in getLastOrder");
+	const username = sanitize(res.locals.username);
+	console.log("check request in getLastOrder for user ", username);
 
 	try {
-		const lastOrder = await getLastOrderFromDB();
+		const lastOrder = await getLastOrderFromDB(username);
 		console.log("lastOrder exists", Boolean(lastOrder));
 
 		if (Boolean(lastOrder)) {
