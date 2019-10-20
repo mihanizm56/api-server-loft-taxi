@@ -13,6 +13,7 @@ const {
 	getLastOrderFromDB,
 } = require("../../models/orders/methods");
 const ordersSchema = require("../../models/orders/joi-schema");
+const checkIfOrderIsActual = require("../../utils/date/check-actual");
 
 module.exports.addOrder = async (req, res) => {
 	const username = sanitize(res.locals.username);
@@ -131,10 +132,9 @@ module.exports.getLastOrder = async (req, res) => {
 				toText: to_text,
 			} = lastOrder;
 			console.log("lastOrder", lastOrder);
-			const timeCounter = getTimeCount({
-				timestamp: lastOrder.timestamp,
-				expiredAt: lastOrder.expiredAt,
-			});
+
+			// проверяем что заказ не протух
+			const isActual = checkIfOrderIsActual(lastOrder.expiredAt);
 
 			const orderData = {
 				order_id,
@@ -143,16 +143,36 @@ module.exports.getLastOrder = async (req, res) => {
 				to_coords,
 				from_text,
 				to_text,
-				exp_time: timeCounter,
 			};
 
-			console.log("orderData", orderData);
+			if (isActual) {
+				const timeCounter = getTimeCount({
+					timestamp: new Date(),
+					expiredAt: lastOrder.expiredAt,
+				});
 
-			return res.status(STATUSES.STATUS_SUCCESS).json({
-				message: MESSAGES.MESSAGE_SUCCESS,
-				error: "",
-				order: orderData,
-			});
+				console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", timeCounter);
+
+				console.log("orderData", { ...orderData, exp_time: timeCounter });
+
+				return res.status(STATUSES.STATUS_SUCCESS).json({
+					message: MESSAGES.MESSAGE_SUCCESS,
+					error: "",
+					order: { ...orderData, exp_time: timeCounter },
+				});
+			} else {
+				// если время заказа истекло - то завершить заказ
+				await doneOrderFromDb({
+					id: order_id,
+					orderData: { isDone: true },
+				});
+
+				return res.status(STATUSES.STATUS_SUCCESS).json({
+					message: MESSAGES.MESSAGE_SUCCESS,
+					error: "",
+					order: { ...orderData, is_done: true },
+				});
+			}
 		} else {
 			return res
 				.status(STATUSES.STATUS_SUCCESS)
