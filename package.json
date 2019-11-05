@@ -16,8 +16,8 @@
   },
   "scripts": {
     "lint": "lint-staged",
-    "dev": "cross-env-shell NODE_ENV=development nodemon src/app.js",
-    "start": "cross-env-shell NODE_ENV=production node src/app.js",
+    "dev": "cross-env-shell NODE_ENV=development nodemon ./src/app.js",
+    "start": "cross-env-shell NODE_ENV=production node ./src/app.js",
     "stop": "taskkill /F /IM node.exe",
     "push": "git add . && npm run lint && git cz && git push"
   },
@@ -60,6 +60,7 @@
     "lodash": "^4.17.15",
     "mongo-sanitize": "^1.0.1",
     "mongoose": "^5.7.1",
+    "mongoose-paginate": "^5.0.3",
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.0"
   }

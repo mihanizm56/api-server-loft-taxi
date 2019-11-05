@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate");
 
 const ordersSchema = new mongoose.Schema({
 	username: {
@@ -40,5 +41,8 @@ const ordersSchema = new mongoose.Schema({
 		unique: false,
 	},
 });
+
+// set the plugin to paginate
+ordersSchema.plugin(mongoosePaginate);
 
 mongoose.model("Orders", ordersSchema, "Orders");

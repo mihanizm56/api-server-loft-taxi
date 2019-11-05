@@ -11,6 +11,7 @@ const {
 	addOrderInDb,
 	doneOrderFromDb,
 	getLastOrderFromDB,
+	getOrdersFromDB,
 } = require("../../models/orders/methods");
 const ordersSchema = require("../../models/orders/joi-schema");
 const checkIfOrderIsActual = require("../../utils/date/check-actual");
@@ -180,6 +181,49 @@ module.exports.getLastOrder = async (req, res) => {
 		}
 	} catch (error) {
 		console.log("error when get the last order data", error);
+
+		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
+			message: MESSAGES.MESSAGE_ERROR,
+			error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+		});
+	}
+};
+
+module.exports.getPaginatedOrders = async (req, res) => {
+	const page = req.query.page;
+	console.log("на сервер пришло page", page);
+
+	try {
+		const { paginatedOrders, totalElements } = await getOrdersFromDB({ page });
+		console.log(
+			"get number of paginated orders from db",
+			paginatedOrders.length
+		);
+		console.log("get totalElements of paginated orders from db", totalElements);
+
+		if (Boolean(paginatedOrders && totalElements)) {
+			const data = {
+				orders: paginatedOrders,
+				totalElements,
+			};
+
+			return res.status(STATUSES.STATUS_SUCCESS).json({
+				message: MESSAGES.MESSAGE_SUCCESS,
+				error: "",
+				data,
+			});
+		}
+
+		return res.status(STATUSES.STATUS_SUCCESS).json({
+			message: MESSAGES.MESSAGE_SUCCESS,
+			error: "",
+			data: {
+				orders: [],
+				totalElements: 0,
+			},
+		});
+	} catch (error) {
+		console.log("error when get paginated orders data", error);
 
 		return res.status(STATUSES.STATUS_INTERNAL_SERVER_ERROR).json({
 			message: MESSAGES.MESSAGE_ERROR,
