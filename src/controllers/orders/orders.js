@@ -190,10 +190,10 @@ module.exports.getLastOrder = async (req, res) => {
 };
 
 module.exports.getPaginatedOrders = async (req, res) => {
-	const page = req.query.page;
-	console.log("на сервер пришло page", page);
-
 	try {
+		const page = parseInt(req.query.page) + 1
+		console.log("на сервер пришло page", page);
+
 		const { paginatedOrders, totalElements } = await getOrdersFromDB({ page });
 		console.log(
 			"get number of paginated orders from db",
