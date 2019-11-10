@@ -3,9 +3,14 @@ require("./model.js");
 
 const OrdersModel = mongoose.model("Orders");
 
+const ORDERS_IN_PAGE = 20;
+
 // get orders with pagination
 module.exports.getOrdersFromDB = async ({ page }) => {
-	const { docs } = await OrdersModel.paginate({}, { page, limit: 20 });
+	const { docs } = await OrdersModel.paginate(
+		{},
+		{ page, limit: ORDERS_IN_PAGE }
+	);
 
 	const totalElements = await OrdersModel.count();
 
